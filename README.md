@@ -1,2 +1,3 @@
-# food-flex-android
+# Food Flex: Android Edition
 Android App for Food Flex
+This is just an idea I'm flirting with...
