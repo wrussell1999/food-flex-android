@@ -87,8 +87,8 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, SubmissionActivity.class);
             startActivity(intent);
         } else if (id == R.id.vote_menu_buttton) {
-            //Intent intent = new Intent(this, VotingActivity.class);
-            //startActivity(intent);
+            Intent intent = new Intent(this, VotingActivity.class);
+            startActivity(intent);
         } else if (id == R.id.results_menu_button) {
             Intent intent = new Intent(this, ResultsActivity.class);
             startActivity(intent);

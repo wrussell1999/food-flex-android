@@ -11,8 +11,13 @@ public class SubmissionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submission);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        this.getSupportActionBar().setTitle("Submission");
+        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_arrow);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish(); // close this activity as oppose to navigating up
+        return false;
     }
 }
