@@ -12,6 +12,7 @@
         <activity
             android:name=".SubmissionActivity"
             android:label="Submission"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".VotingActivity"
