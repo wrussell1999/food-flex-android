@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        item.setChecked(true);
         if (id == R.id.food_chat_menu_button)  {
             Intent intent = new Intent(this, FoodChatActivity.class);
             startActivity(intent);
