@@ -1,11 +1,12 @@
 package com.will_russell.food_flex_android;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.TypedArrayUtils;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import android.util.TypedValue;
+import com.google.android.material.textfield.TextInputEditText;
 import android.view.Gravity;
 import android.view.View;
 import android.os.Bundle;
@@ -20,13 +21,13 @@ import android.view.ViewGroup.LayoutParams;
 import android.provider.MediaStore;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class SubmissionActivity extends AppCompatActivity {
 
     static final int GET_FROM_GALLERY = 3;
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    private ImageView mImageView;
-
+    ArrayList<Bitmap> images = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,12 +44,16 @@ public class SubmissionActivity extends AppCompatActivity {
     }
 
     public void uploadPhoto(View v) {
-        startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI), GET_FROM_GALLERY);
+        if (checkImageCount() == true) {
+            startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI), GET_FROM_GALLERY);
+        } else {
+            View contextView = findViewById(R.id.camera_button);
+            Snackbar.make(contextView, "You can't submit any more images", Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     public void takePhoto(View v) {
-        LinearLayout layout = (LinearLayout) findViewById(R.id.ImageLayout);
-        if (layout.getChildCount() <= 3) {
+        if (checkImageCount() == true) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
@@ -56,6 +61,15 @@ public class SubmissionActivity extends AppCompatActivity {
         } else {
             View contextView = findViewById(R.id.camera_button);
             Snackbar.make(contextView, "You can't submit any more images", Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean checkImageCount() {
+        LinearLayout layout = (LinearLayout) findViewById(R.id.ImageLayout);
+        if (layout.getChildCount() < 3) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -67,8 +81,8 @@ public class SubmissionActivity extends AppCompatActivity {
             Bitmap imageBitmap = null;
             try {
                 imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                //mImageView.setImageBitmap(imageBitmap);
-                insertImage(imageBitmap);
+                images.add(imageBitmap);
+                insertImage();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -77,26 +91,30 @@ public class SubmissionActivity extends AppCompatActivity {
         } else if (requestCode==REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            //ImageView.setImageBitmap(imageBitmap);
-            insertImage(imageBitmap);
+            images.add(imageBitmap);
+            insertImage();
         }
     }
 
-    private void insertImage(Bitmap data) {
+    private void insertImage() {
         LinearLayout layout = (LinearLayout) findViewById(R.id.ImageLayout);
         layout.removeAllViews();
-        ImageView iv = new ImageView(this);
-        MaterialCardView cardView = buildCardView();
-        iv.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        iv.setImageBitmap(data);
-        cardView.addView(iv);
-        layout.addView(cardView);
+        for (int i = 0; i < images.size(); i++) {
+            ImageView iv = new ImageView(this);
+            MaterialCardView cardView = buildCardView(i);
+            iv.setId(i);
+            iv.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            iv.setImageBitmap(images.get(i));
+            cardView.addView(iv);
+            layout.addView(cardView);
+        }
     }
 
-    private MaterialCardView buildCardView() {
+    private MaterialCardView buildCardView(int index) {
         MaterialCardView cv = new MaterialCardView(this);
-        MaterialCardView.LayoutParams params = new MaterialCardView.LayoutParams(360, LayoutParams.MATCH_PARENT);
+        cv.setId(index);
+        MaterialCardView.LayoutParams params = new MaterialCardView.LayoutParams(320, LayoutParams.MATCH_PARENT);
         params.gravity = Gravity.CENTER;
         cv.setRadius(8f);
         cv.setElevation(10f);
