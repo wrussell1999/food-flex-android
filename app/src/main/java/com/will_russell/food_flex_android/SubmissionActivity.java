@@ -119,7 +119,7 @@ public class SubmissionActivity extends AppCompatActivity {
         cv.setRadius(8f);
         cv.setElevation(10f);
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) params;
-        layoutParams.setMargins(5,5,5,5);
+        layoutParams.setMargins(14,5,5,14);
         cv.setLayoutParams(params);
         cv.requestLayout();
         return cv;
