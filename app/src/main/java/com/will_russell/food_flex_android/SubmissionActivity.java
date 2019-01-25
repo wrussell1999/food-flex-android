@@ -1,18 +1,24 @@
 package com.will_russell.food_flex_android;
 
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import android.util.TypedValue;
 import android.view.View;
 import android.os.Bundle;
 import android.content.Intent;
 import android.app.Activity;
 import android.net.Uri;
 import android.graphics.Bitmap;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.view.ViewGroup.LayoutParams;
 import android.provider.MediaStore;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import android.widget.ImageView;
 
 public class SubmissionActivity extends AppCompatActivity {
 
@@ -26,7 +32,6 @@ public class SubmissionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_submission);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_arrow);
-        mImageView = (ImageView) findViewById(R.id.submission_preview);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,13 +46,15 @@ public class SubmissionActivity extends AppCompatActivity {
     }
 
     public void takePhoto(View v) {
-        dispatchTakePictureIntent();
-    }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.ImageLayout);
+        if (layout.getChildCount() <= 3) {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        } else {
+            View contextView = findViewById(R.id.camera_button);
+            Snackbar.make(contextView, "You can't submit any more images", Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -56,10 +63,11 @@ public class SubmissionActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==GET_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
-            Bitmap bitmap = null;
+            Bitmap imageBitmap = null;
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                mImageView.setImageBitmap(bitmap);
+                imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                //mImageView.setImageBitmap(imageBitmap);
+                insertImage(imageBitmap);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -68,8 +76,32 @@ public class SubmissionActivity extends AppCompatActivity {
         } else if (requestCode==REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mImageView.setImageBitmap(imageBitmap);
+            //ImageView.setImageBitmap(imageBitmap);
+            insertImage(imageBitmap);
         }
+    }
+
+    private void insertImage(Bitmap data) {
+        LinearLayout layout = (LinearLayout) findViewById(R.id.ImageLayout);
+        layout.removeAllViews();
+        ImageView iv = new ImageView(this);
+        MaterialCardView cardView = buildCardView();
+        iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        iv.setImageBitmap(data);
+        cardView.addView(iv);
+        layout.addView(cardView);
+    }
+
+    private MaterialCardView buildCardView() {
+        MaterialCardView cv = new MaterialCardView(this);
+        LayoutParams params = new LayoutParams(90, 120);
+        cv.setLayoutParams(params);
+        cv.setRadius(8f);
+        cv.setElevation(10f);
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) cv.getLayoutParams();
+        layoutParams.setMargins(5,5,5,5);
+        cv.requestLayout();
+        return cv;
     }
 
     @Override
