@@ -6,6 +6,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.os.Bundle;
 import android.content.Intent;
@@ -73,7 +74,7 @@ public class SubmissionActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if (requestCode==REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        } else if (requestCode==REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             //ImageView.setImageBitmap(imageBitmap);
@@ -86,6 +87,7 @@ public class SubmissionActivity extends AppCompatActivity {
         layout.removeAllViews();
         ImageView iv = new ImageView(this);
         MaterialCardView cardView = buildCardView();
+        iv.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
         iv.setImageBitmap(data);
         cardView.addView(iv);
@@ -94,12 +96,13 @@ public class SubmissionActivity extends AppCompatActivity {
 
     private MaterialCardView buildCardView() {
         MaterialCardView cv = new MaterialCardView(this);
-        LayoutParams params = new LayoutParams(90, 120);
-        cv.setLayoutParams(params);
+        MaterialCardView.LayoutParams params = new MaterialCardView.LayoutParams(360, LayoutParams.MATCH_PARENT);
+        params.gravity = Gravity.CENTER;
         cv.setRadius(8f);
         cv.setElevation(10f);
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) cv.getLayoutParams();
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) params;
         layoutParams.setMargins(5,5,5,5);
+        cv.setLayoutParams(params);
         cv.requestLayout();
         return cv;
     }
