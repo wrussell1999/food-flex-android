@@ -4,8 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".VotingActivity">
-
-    <include layout="@layout/submission_item_list" />
+    tools:context=".IndividualSubmission">
 
 </androidx.constraintlayout.widget.ConstraintLayout>
