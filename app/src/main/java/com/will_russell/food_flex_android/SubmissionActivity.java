@@ -1,12 +1,10 @@
 package com.will_russell.food_flex_android;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.TypedArrayUtils;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
 import android.view.Gravity;
 import android.view.View;
 import android.os.Bundle;
@@ -14,63 +12,63 @@ import android.content.Intent;
 import android.app.Activity;
 import android.net.Uri;
 import android.graphics.Bitmap;
-import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
 import android.provider.MediaStore;
+
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class SubmissionActivity extends AppCompatActivity {
 
     static final int GET_FROM_GALLERY = 3;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     ArrayList<Bitmap> images = new ArrayList<>();
+    Submission submission;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submission);
-        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(this.getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_arrow);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+            submit();
+            Submission.submissionList.add(submission);
+            finish();
         });
     }
 
     public void uploadPhoto(View v) {
-        if (checkImageCount() == true) {
+        if (checkImageCount()) {
             startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI), GET_FROM_GALLERY);
         } else {
             View contextView = findViewById(R.id.camera_button);
-            Snackbar.make(contextView, "You can't submit any more images", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(contextView, getResources().getString(R.string.error_images), Snackbar.LENGTH_SHORT).show();
         }
     }
 
     public void takePhoto(View v) {
-        if (checkImageCount() == true) {
+        if (checkImageCount()) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         } else {
             View contextView = findViewById(R.id.camera_button);
-            Snackbar.make(contextView, "You can't submit any more images", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(contextView, getResources().getString(R.string.error_images), Snackbar.LENGTH_SHORT).show();
         }
     }
 
     private boolean checkImageCount() {
-        LinearLayout layout = (LinearLayout) findViewById(R.id.ImageLayout);
-        if (layout.getChildCount() < 3) {
-            return true;
-        } else {
-            return false;
-        }
+        LinearLayout layout = findViewById(R.id.ImageLayout);
+        return layout.getChildCount() < 3;
     }
 
     @Override
@@ -78,7 +76,7 @@ public class SubmissionActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==GET_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
-            Bitmap imageBitmap = null;
+            Bitmap imageBitmap;
             try {
                 imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                 images.add(imageBitmap);
@@ -97,7 +95,7 @@ public class SubmissionActivity extends AppCompatActivity {
     }
 
     private void insertImage() {
-        LinearLayout layout = (LinearLayout) findViewById(R.id.ImageLayout);
+        LinearLayout layout = findViewById(R.id.ImageLayout);
         layout.removeAllViews();
         for (int i = 0; i < images.size(); i++) {
             ImageView iv = new ImageView(this);
@@ -118,16 +116,23 @@ public class SubmissionActivity extends AppCompatActivity {
         params.gravity = Gravity.CENTER;
         cv.setRadius(8f);
         cv.setElevation(10f);
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) params;
-        layoutParams.setMargins(14,5,5,14);
+        params.setMargins(14,5,5,14);
         cv.setLayoutParams(params);
         cv.requestLayout();
         return cv;
     }
 
+    private void submit() {
+        EditText titleView = findViewById(R.id.name_field);
+        EditText descriptionView = findViewById(R.id.description_field);
+        String title = titleView.getText().toString();
+        String description = descriptionView.getText().toString();
+        submission = new Submission(title, description, images);
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
-        finish(); // close this activity as oppose to navigating up
-        return false;
+        finish();
+        return true;
     }
 }

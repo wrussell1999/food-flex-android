@@ -12,6 +12,7 @@
 
     <string name="server_url"></string>
 
+    <string name="error_images">You can\'t submit any more images</string>
     <string name="action_example">Example action</string>
 
     <string name="error">Something went wrong</string>

@@ -62,7 +62,7 @@
                 android:id="@+id/name_field"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:hint="Food"
                 android:layout_gravity="center">
                 <com.google.android.material.textfield.TextInputEditText
@@ -76,7 +76,7 @@
                 android:id="@+id/description_field"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:hint="Description"
                 android:layout_gravity="center">
                 <com.google.android.material.textfield.TextInputEditText

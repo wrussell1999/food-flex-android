@@ -34,7 +34,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.Vi
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = Submission.submissionList.get(position);
         holder.titleView.setText(holder.mItem.getTitle());
-        holder.imageView.setImageBitmap(holder.mItem.getImage());
+        holder.imageView.setImageBitmap(holder.mItem.getImage(0));
         holder.authorView.setText(holder.mItem.getAuthor());
 
         holder.mView.setClickable(true);
