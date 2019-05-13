@@ -26,9 +26,10 @@ import java.util.Objects;
 public class SubmissionActivity extends AppCompatActivity {
 
     static final int GET_FROM_GALLERY = 3;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int GET_IMAGE_CAPTURE = 1;
     ArrayList<Bitmap> images = new ArrayList<>();
     Submission submission;
+    LinearLayout imageLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,8 @@ public class SubmissionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_submission);
         Objects.requireNonNull(this.getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_arrow);
+        
+        imageLayout = findViewById(R.id.ImageLayout);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
@@ -58,7 +61,7 @@ public class SubmissionActivity extends AppCompatActivity {
         if (checkImageCount()) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                startActivityForResult(takePictureIntent, GET_IMAGE_CAPTURE);
             }
         } else {
             View contextView = findViewById(R.id.camera_button);
@@ -67,14 +70,13 @@ public class SubmissionActivity extends AppCompatActivity {
     }
 
     private boolean checkImageCount() {
-        LinearLayout layout = findViewById(R.id.ImageLayout);
-        return layout.getChildCount() < 3;
+        return imageLayout < 3 && iamges.size() < 3;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==GET_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
+        if(requestCode == GET_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
             Bitmap imageBitmap;
             try {
@@ -86,7 +88,7 @@ public class SubmissionActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if (requestCode==REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == GET_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             images.add(imageBitmap);
@@ -94,9 +96,15 @@ public class SubmissionActivity extends AppCompatActivity {
         }
     }
 
+    // Removes from ArrayList and rebuilds ViewGroup
+    private void removeImage(int index) {
+        images.remove(index);
+        insertImage();
+    }
+
+    // Rebuilds ViewGroup from ArrayList
     private void insertImage() {
-        LinearLayout layout = findViewById(R.id.ImageLayout);
-        layout.removeAllViews();
+        imageLayout.removeAllViews();
         for (int i = 0; i < images.size(); i++) {
             ImageView iv = new ImageView(this);
             MaterialCardView cardView = buildCardView(i);
@@ -109,19 +117,21 @@ public class SubmissionActivity extends AppCompatActivity {
         }
     }
 
+    // Round corners
     private MaterialCardView buildCardView(int index) {
-        MaterialCardView cv = new MaterialCardView(this);
-        cv.setId(index);
+        MaterialCardView card = new MaterialCardView(this);
+        card.setId(index);
         MaterialCardView.LayoutParams params = new MaterialCardView.LayoutParams(320, LayoutParams.MATCH_PARENT);
         params.gravity = Gravity.CENTER;
-        cv.setRadius(8f);
-        cv.setElevation(10f);
+        card.setRadius(8f);
+        card.setElevation(10f);
         params.setMargins(14,5,5,14);
-        cv.setLayoutParams(params);
-        cv.requestLayout();
-        return cv;
+        card.setLayoutParams(params);
+        card.requestLayout();
+        return card;
     }
 
+    // Creates submission object
     private void submit() {
         EditText titleView = findViewById(R.id.name_field);
         EditText descriptionView = findViewById(R.id.description_field);
