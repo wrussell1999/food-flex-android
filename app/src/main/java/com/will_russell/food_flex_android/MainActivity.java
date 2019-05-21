@@ -3,20 +3,13 @@ package com.will_russell.food_flex_android;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
 
-import androidx.annotation.NonNull;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.content.Intent;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
         transaction.replace(R.id.frame_layout, KitchenFragment.newInstance());
         transaction.commit();
 
+    }
+
+    public void openSubmission(int position) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_layout, IndividualFragment.newInstance(position));
+        transaction.commit();
     }
 
     @Override

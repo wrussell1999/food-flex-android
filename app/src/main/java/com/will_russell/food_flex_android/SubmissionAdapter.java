@@ -38,7 +38,7 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionAdapter.Vi
         holder.authorView.setText(holder.mItem.getAuthor());
 
         holder.mView.setClickable(true);
-        holder.mView.setOnClickListener(v -> ((VotingActivity) holder.mView.getContext()).openSubmission(position));
+        holder.mView.setOnClickListener(v -> ((MainActivity) holder.mView.getContext()).openSubmission(position));
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
