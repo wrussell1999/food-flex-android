@@ -35,7 +35,7 @@ public class VotingFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.submission_fragment, container, false);
+        View view = inflater.inflate(R.layout.voting_fragment, container, false);
 
         Context context = getContext();
         RecyclerView recyclerView = view.findViewById(R.id.list);

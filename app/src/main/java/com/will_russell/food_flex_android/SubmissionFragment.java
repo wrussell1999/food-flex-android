@@ -1,7 +1,9 @@
 package com.will_russell.food_flex_android;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,8 +16,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -24,10 +31,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class SubmissionFragment extends Fragment {
+public class SubmissionFragment extends Fragment implements View.OnClickListener {
 
     static final int GET_FROM_GALLERY = 3;
     static final int GET_IMAGE_CAPTURE = 1;
+    static final int GET_CAMERA_PERMISSION = 4;
     ArrayList<Bitmap> images = new ArrayList<>();
     Submission submission;
     LinearLayout imageLayout;
@@ -40,6 +48,13 @@ public class SubmissionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.submission_fragment, container, false);
+
+        imageLayout = view.findViewById(R.id.image_layout);
+        MaterialButton takePhotoButton = view.findViewById(R.id.camera_button);
+        MaterialButton uploadPhotoButton = view.findViewById(R.id.upload_button);
+        takePhotoButton.setOnClickListener(this);
+        uploadPhotoButton.setOnClickListener(this);
+
         FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(v -> {
             submit(view);
@@ -59,7 +74,7 @@ public class SubmissionFragment extends Fragment {
     }
 
     public void takePhoto(View v) {
-        if (checkImageCount()) {
+        if (checkImageCount() || checkCameraPermission()) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                 startActivityForResult(takePictureIntent, GET_IMAGE_CAPTURE);
@@ -67,6 +82,39 @@ public class SubmissionFragment extends Fragment {
         } else {
             View contextView = v.findViewById(R.id.camera_button);
             Snackbar.make(contextView, getResources().getString(R.string.error_images), Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    public boolean checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.CAMERA)) {
+                return false;
+            } else {
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.CAMERA},
+                        GET_CAMERA_PERMISSION);
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case GET_CAMERA_PERMISSION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                }
+                return;
+            }
         }
     }
 
@@ -137,5 +185,33 @@ public class SubmissionFragment extends Fragment {
         String title = titleView.getText().toString();
         String description = descriptionView.getText().toString();
         submission = new Submission(title, description, images);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch(view.getId()) {
+            case R.id.upload_button:
+                uploadPhoto(view);
+                break;
+            case R.id.camera_button:
+                takePhoto(view);
+                break;
+        }
+    }
+
+    public void submissionOpen() {
+
+    }
+
+    public void submissionReminder() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), "Submissions")
+                .setSmallIcon(R.drawable.time)
+                .setContentTitle("1 hour left for submissions")
+                .setContentText("There's still time to submit today's flex!")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
+
+// notificationId is a unique int for each notification that you must define
+        notificationManager.notify(1, builder.build());
     }
 }

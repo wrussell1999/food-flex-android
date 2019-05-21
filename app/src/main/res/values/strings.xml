@@ -5,10 +5,7 @@
     <string name="nav_header_title">William Russell</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_voting">VotingActivity</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+
 
     <string name="server_url">https://www.will-russell.com</string>
 
@@ -16,5 +13,12 @@
     <string name="action_example">Example action</string>
 
     <string name="error">Something went wrong</string>
+#
+
+
+    <string name="kitchen_title">Kitchens</string>
+    <string name="submission_title">Your Submission</string>
+    <string name="voting_title">Voting</string>
+    <string name="results_title">Results</string>
 
 </resources>
