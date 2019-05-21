@@ -10,12 +10,11 @@
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
 
-    <string name="server_url"></string>
+    <string name="server_url">https://www.will-russell.com</string>
 
     <string name="error_images">You can\'t submit any more images</string>
     <string name="action_example">Example action</string>
 
     <string name="error">Something went wrong</string>
-
 
 </resources>

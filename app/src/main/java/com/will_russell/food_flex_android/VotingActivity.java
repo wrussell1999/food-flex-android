@@ -21,14 +21,14 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 public class VotingActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
-    private final String SERVER_URL = getResources().getString(R.string.server_url);
+    private final String SERVER_URL = "";//getResources().getString(R.string.server_url);
     SwipeRefreshLayout mSwipeRefreshLayout;
     public static SubmissionAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_voting);
+        setContentView(R.layout.voting_fragment);
 
         Context context = getApplicationContext();
         RecyclerView recyclerView = findViewById(R.id.list);
